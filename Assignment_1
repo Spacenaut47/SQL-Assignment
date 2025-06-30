@@ -1,0 +1,93 @@
+--Table Setup
+CREATE TABLE departments (
+    id INTEGER PRIMARY KEY,
+    department_name TEXT
+);
+
+CREATE TABLE employees (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    department_id INTEGER,
+    salary INTEGER,
+    hire_date DATE,
+    FOREIGN KEY (department_id) REFERENCES departments(id)
+);
+
+--Data Insertion
+INSERT INTO departments (id, department_name) VALUES
+(1, 'HR'),
+(2, 'Engineering'),
+(3, 'Sales');
+
+INSERT INTO employees (id, name, department_id, salary, hire_date) VALUES
+(1, 'Alice', 1, 55000, '2019-01-15'),
+(2, 'Bob', 2, 72000, '2018-03-20'),
+(3, 'Charlie', 2, 68000, '2020-06-30'),
+(4, 'Diana', 3, 50000, '2021-08-01'),
+(5, 'Eve', 1, 52000, '2022-01-12');
+
+-- Questions
+-- 1. Retrieve all employees
+SELECT * FROM employees;
+
+-- 2. List names of employees in the HR department
+SELECT name FROM employees
+WHERE department_id = (SELECT id FROM departments WHERE department_name = 'HR');
+
+-- 3. Insert a new employee into the Engineering department
+INSERT INTO employees (id, name, department_id, salary, hire_date)
+VALUES (6, 'Frank', 2, 65000, '2023-02-01');
+
+-- 4. Update salary of 'Eve' to 55000
+UPDATE employees SET salary = 55000 WHERE name = 'Eve';
+
+-- 5. Delete employee with ID = 4
+DELETE FROM employees WHERE id = 4;
+
+-- 6. List employees along with their department name
+SELECT e.name, d.department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.id;
+
+-- 7. Count how many employees work in each department
+SELECT d.department_name, COUNT(*) AS employee_count
+FROM employees e
+JOIN departments d ON e.department_id = d.id
+GROUP BY d.department_name;
+
+-- 8. Find the average salary per department
+SELECT d.department_name, AVG(e.salary) AS average_salary
+FROM employees e
+JOIN departments d ON e.department_id = d.id
+GROUP BY d.department_name;
+
+-- 9. Show employees hired after Jan 1, 2020
+SELECT * FROM employees WHERE hire_date > '2020-01-01';
+
+-- 10. Sort employees by salary descending
+SELECT * FROM employees ORDER BY salary DESC;
+
+-- 11. Employees who earn more than average salary
+SELECT * FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
+
+-- 12. Create a view showing name, department, and salary
+CREATE VIEW employee_details AS
+SELECT e.name, d.department_name, e.salary
+FROM employees e
+JOIN departments d ON e.department_id = d.id;
+
+-- 13. Create an index on the hire_date column
+CREATE INDEX idx_hire_date ON employees(hire_date);
+
+-- 14. CTE: Total salary per department where total > 100000
+WITH dept_salary AS (
+    SELECT department_id, SUM(salary) AS total_salary
+    FROM employees
+    GROUP BY department_id
+)
+SELECT d.department_name, s.total_salary
+FROM dept_salary s
+JOIN departments d ON s.department_id = d.id
+WHERE s.total_salary > 100000;
+
