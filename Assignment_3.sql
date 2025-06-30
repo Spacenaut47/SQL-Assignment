@@ -1,0 +1,57 @@
+INSERT INTO departments VALUES
+(1, 'HR'),
+(2, 'Engineering'),
+(3, 'Marketing');
+
+INSERT INTO employees VALUES
+(1, 'Alice', 2, 80000, '2020-05-20'),
+(2, 'Bob', 1, 50000, '2021-02-15'),
+(3, 'Charlie', 2, 95000, '2019-11-17'),
+(4, 'Diana', 3, 60000, '2022-08-01'),
+(5, 'Eve', 2, 78000, '2021-01-12');
+
+--Q1: List employees along with their department name (using JOIN)
+
+SELECT e.name AS employee_name, d.name AS department_name
+FROM employees e
+JOIN departments d ON e.department_id = d.id;
+
+--Q2: Find employees earning more than average salary using subquery
+
+SELECT * FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees);
+
+--Q3: Use a CTE to find employees in Engineering earning above $80,000
+
+WITH engineering_high_earners AS (
+    SELECT e.*
+    FROM employees e
+    JOIN departments d ON e.department_id = d.id
+    WHERE d.name = 'Engineering' AND e.salary > 80000
+)
+SELECT * FROM engineering_high_earners;
+
+--Q4: Assign row number to employees ordered by salary descending
+
+SELECT *,
+       ROW_NUMBER() OVER (ORDER BY salary DESC) AS row_num
+FROM employees;
+
+--Q5: Assign rank based on salary
+
+SELECT *,
+       RANK() OVER (ORDER BY salary DESC) AS salary_rank
+FROM employees;
+
+--Q6: Create index on department_id for faster joins
+
+CREATE INDEX idx_department_id ON employees(department_id);
+
+--Q7: Use EXPLAIN QUERY PLAN to analyze a query
+
+EXPLAIN QUERY PLAN
+SELECT e.name, d.name
+FROM employees e
+JOIN departments d ON e.department_id = d.id;
+
+
