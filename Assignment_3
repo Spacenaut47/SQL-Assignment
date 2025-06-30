@@ -1,3 +1,17 @@
+CREATE TABLE departments (
+    id INTEGER PRIMARY KEY,
+    name TEXT
+);
+
+CREATE TABLE employees (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    department_id INTEGER,
+    salary INTEGER,
+    hire_date DATE,
+    FOREIGN KEY(department_id) REFERENCES departments(id)
+);
+------------------------------------------------------------------------
 INSERT INTO departments VALUES
 (1, 'HR'),
 (2, 'Engineering'),
